@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Member">
+ 
+  <resultMap id="MemberResult"  type="Member">
+    <result property="member_no" column="member_no"/>
+    <result property="member_grade" column="member_grade"/>
+    <result property="member_email" column="member_email"/>
+    <result property="member_pw" column="member_pw"/>
+    <result property="member_nick" column="member_nick"/>
+    <result property="uni_no" column="uni_no"/>
+    <result property="member_photo" column="member_photo"/>
+    <result property="approval_status" column="approval_status"/>
+    <result property="approval_key" column="approval_key"/>
+    <result property="reg_date" column="reg_date"/>
+    <result property="log_date" column="log_date"/>
+      <result property="uni_name" column="uni_name"/>
+    
+    <!-- 메시지 property -->
+	<result property="msg_no" column="msg_no"/>
+	<result property="msg_sender" column="msg_sender"/>
+	<result property="msg_reci" column="msg_reci"/>
+	<result property="msg_sender_no" column="msg_sender"/>
+	<result property="msg_reci_no" column="msg_reci"/>
+	<result property="msg_date" column="msg_date"/>
+	<result property="msg_cont" column="msg_cont"/>
+  </resultMap>						
+   
+  <select id="check_email" parameterType="String" resultType="int">
+  	select count(*) from member where member_email = #{member_email}
+  </select>
+  
+  <select id="check_nick" parameterType="String" resultType="int">
+  	select count(*) from member where member_nick = #{member_nick}
+  </select>
+  
+  <insert id="register" parameterType="member">
+    insert into member (member_no, member_grade, member_email, member_pw, member_nick, member_photo, uni_no,  reg_date, log_date, approval_status, approval_key)
+  	values (member_seq.nextval, 1, #{member_email}, #{member_pw}, #{member_nick}, '../resources/ps/default_icon.png',  #{uni_no}, sysdate, sysdate, 'false',  #{approval_key} )
+  </insert>
+  
+  <update id="approval_member" parameterType="member">
+  	update member set approval_status = 'true' 
+  	where member_email = #{member_email} and approval_key = #{approval_key}	
+  </update>
+  
+  <select id="login" parameterType="String" resultType="member">
+  	select * from member where member_email = #{member_email}
+  </select>
+  
+  <update id="update_log" parameterType="String">
+  	update member set log_date = sysdate where member_email = #{member_email}
+  </update>
+  
+  <select id="find_email" parameterType="String" resultType="String">
+  	select member_email from member where member_nick = #{member_nick}
+  </select>
+  
+  <update id="update_pw" parameterType="member">
+  	update member set member_pw = #{member_pw} where member_email = #{member_email}
+  </update>
+  
+  <update id="update_mypage" parameterType="member">
+	<!-- update member set member_nick = #{member_nick} where member_email = #{member_email} -->
+	update member set member_nick = #{member_nick} where member_email = #{member_email} and #{member_nick} not in (select member_nick from member )
+  </update>
+  
+  <delete id="withdrawal" parameterType="member">
+	delete from member where member_email = #{member_email} and member_pw = #{member_pw}
+  </delete>
+    
+  <select id="view" parameterType="member" resultMap="MemberResult">
+	select mem.*, uni.uni_name
+	from member mem, university uni
+	where mem.uni_no = uni.uni_no and mem.member_email = #{member_email}
+  </select>
+ 
+   <select id="select_profile" parameterType="int" resultType="member">
+	select member_photo from member where member_no = #{member_no}
+  </select> 
+ 
+  <update id="update_profile" parameterType="member">
+  	update member set member_photo = #{member_photo, jdbcType=VARCHAR} WHERE member_no = #{member_no}
+  </update>
+  <select id="getMyPhoto" parameterType="int" resultType="member">
+  select member_photo from member where member_no = #{member_no}
+  </select>
+  <select id="lectureBoardList" parameterType="member" resultMap="MemberResult">
+     select * from 
+        (select rownum rn, a.* 
+         from (select mem.*, lec.leceval_no, lec.lec_review, lec.att_term ,lec_name, lec_score,p.prof_name
+               from member mem, lectureeval lec ,lecture l,professor p
+               where mem.member_no = lec.member_no 
+               and p.PROF_NO = l.PROF_NO
+               and p.UNI_NO = l.UNI_NO
+               and lec.lec_no = l.lec_no
+               and member_email =#{member_email}) a
+        )
+    where rn between #{start} and #{end} 
+   </select>
+   
+   <select id="bookBoardList" parameterType="member" resultMap="MemberResult">
+    select * from 
+        (select rownum rn, a.* from 
+            (select mem.*, bo.book_no, bo.book_name, bo.book_selling, bo.book_met, bo.book_cont, bo.book_state,bp.BOOK_PHOTO1
+             from member mem, book bo , bookphoto bp
+             where mem.member_no = bo.member_no
+             and bo.book_no=bp.book_no
+             and member_email  = #{member_email}) a
+        )
+    where rn between #{start} and #{end}
+   </select>
+   
+   <select id="studyBoardList" parameterType="member" resultMap="MemberResult">
+    select * from 
+        (select rownum rn, a.* 
+        from (select mem.*, st.study_no, st.study_type, st.study_title, st.study_writer, st.study_cont 
+              from member mem, study st 
+              where mem.member_no = st.member_no
+              and member_email = #{member_email}) a
+        )
+    where rn between  #{start} and #{end}
+   </select>
+   
+   <select id="lectureEvalTotal"  parameterType="member" resultType="int">
+  	select count(*) from member mem, lectureEval lec where mem.member_no = #{member_no} and lec.member_no = #{member_no}
+   </select>
+   
+   <select id="bookTotal"  parameterType="member" resultType="int">
+  	select count(*) from member mem, book bo where mem.member_no = #{member_no} and bo.member_no = #{member_no}
+   </select>
+   
+   <select id="studyTotal2"  parameterType="member" resultType="int">
+  	select count(*) from member mem, study st where mem.member_no = #{member_no} and st.member_no = #{member_no}
+   </select> 
+  
+    <!-- 메시지 SQL -->
+	<select id="msgsend" parameterType="member" resultType="Member">
+		 select msg_sender,msg_reci 
+     from (select rownum rn, a.MSG_SENDER1 MSG_SENDER, a.msg_reci1 msg_reci, a.msg_date 
+      	   from (select msg.*,msg.MSG_SENDER MSG_SENDER1, msg.MSG_reci MSG_reci1, mem.* from message msg, member mem 
+      	       where (msg.msg_sender=#{member_nick} or msg.msg_reci=#{member_nick}) and mem.member_nick=#{member_nick} and msg.msg_reci != #{member_nick}
+               ) a) 
+    where rn between #{start} and #{end}
+    group by MSG_SENDER, msg_reci
+	</select>
+	<select id="msgcont" parameterType="member" resultType="Member">
+		  select msg_cont,msg_date
+    from(select rownum rn4, msg_cont,msg_date
+    from(select rownum rn3,msg_cont ,msg_date
+         from message 
+         where (msg_sender=#{member_nick} or msg_reci=#{member_nick}) 
+         order by msg_date desc))
+    where rn4 =1
+	</select>
+	<select id="msgreci" parameterType="member" resultType="Member">
+		select * from (select rownum rn, a.* 
+		               from (select * 
+		                     from message msg
+                         where ((msg.msg_reci = #{msg_reci} and msg.msg_sender = #{msg_sender}) or (msg.msg_reci = #{msg_sender} and msg.msg_sender = #{msg_reci}))
+		                    order by msg_date ) a)
+		where rn between #{start} and #{end}
+	</select>
+   	
+   	<select id="send_total" parameterType="member" resultType="int">
+  		select count(*) from member mem, message msg where mem.member_no = #{member_no} and msg.msg_sender = #{msg_sender}
+   	</select>
+   	
+   	<select id="reci_total" parameterType="member" resultType="int">
+  		select count(*) from member mem, message msg where mem.member_no = #{member_no} and msg.msg_reci = #{msg_reci}
+   	</select>
+
+	<insert id="write" parameterType="member">
+		insert into message (msg_no, msg_sender, msg_reci, msg_date, msg_cont) 
+		values ((select nvl(max(msg_no)+1,0) from message), #{msg_sender}, #{msg_reci}, sysdate, #{msg_cont})
+	</insert>
+  
+     <!-- 관리자 -->
+    <select id="getAdminPw" resultType="String">
+  	 select member_pw from member where member_grade=0
+    </select>
+  
+</mapper>

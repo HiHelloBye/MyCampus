@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ResultPage">
+<resultMap type="Search" id="Search">
+	<result property="code" column="code"/>
+	<result property="keyword" column="keyword"/>
+	<result property="leceval_no" column="leceval_no"/>
+    <result property="lec_no" column="lec_no"/>
+    <result property="uni_no" column="uni_no"/>
+    <result property="lec_hw" column="lec_hw"/>
+    <result property="lec_ratio" column="lec_ratio"/>
+    <result property="lec_attend" column="lec_attend"/>
+    <result property="lec_exam" column="lec_exam"/>
+    <result property="lec_review" column="lec_review"/>
+    <result property="lec_score" column="lec_score"/>
+    <result property="b" column="b"/>
+    <result property="book_no" column="book_no"/>
+    <result property="book_name" column="book_name"/>
+    <result property="book_writer" column="book_writer"/>
+    <result property="book_pub" column="book_pub"/>
+    <result property="book_date" column="book_date"/>
+    <result property="book_price" column="book_price"/>
+    <result property="book_selling" column="book_selling"/>
+    <result property="book_cont1" column="book_cont1"/>
+    <result property="book_cont2" column="book_cont2"/>
+    <result property="book_met" column="book_met"/>
+    <result property="book_cont" column="book_cont"/>
+    <result property="book_state" column="book_state"/>
+    <result property="book_photo1" column="book_photo1"/>
+    <result property="study_no" column="study_no"/>
+    <result property="study_type" column="study_type"/>
+    <result property="study_title" column="study_title"/>
+    <result property="study_writer" column="study_writer"/>
+    <result property="study_cont" column="study_cont"/>
+    <result property="study_warn" column="study_warn"/>
+    <result property="study_state" column="study_state"/>
+    <result property="uni_name" column="uni_name"/>
+    <result property="lec_name" column="lec_name"/>
+    <result property="start" column="start"/>
+    <result property="end" column="end"/>
+</resultMap>
+
+	<select id="SearchA" parameterType="Search" resultMap="Search">
+		select d.* from (select rownum rn, c.* from (select * from (select b.*, prof_name from (select a.*, lec_name,prof_no from (select le.*, un.uni_name from lectureeval le, university un where le.uni_no=un.uni_no) a, lecture le where a.lec_no=le.lec_no and a.uni_no=le.uni_no) b, professor where b.prof_no = professor.prof_no) where (lec_review like '%'||#{keyword}||'%') or (lec_name like '%'||#{keyword}||'%') or (prof_name='%'||#{keyword}||'%')) c ) d where rn between #{start} and #{end} 
+	</select>
+	<select id="SearchB" parameterType="Search" resultMap="Search">
+		select d.* from (select rownum rn, c.* from (select * from (select b.*,bp.book_photo1 from book b, bookphoto bp where b.book_no=bp.book_no) where (book_name like '%'||#{keyword}||'%' or book_writer like '%'||#{keyword}||'%' or book_pub  like '%'||#{keyword}||'%' or book_cont like '%'||#{keyword}||'%') and book_state=0) c) d where rn between #{start} and #{end}
+	</select>
+	<select id="SearchC" parameterType="Search" resultMap="Search">
+		select d.* from (select rownum rn, c.* from (select * from study where (study_type like '%'||#{keyword}||'%' or study_title like '%'||#{keyword}||'%' or study_cont  like '%'||#{keyword}||'%' or study_writer like '%'||#{keyword}||'%') and study_state=0) c) d where rn between #{start} and #{end}		
+	</select>
+	<select id="searchtotalA" parameterType="String" resultType="int">
+		select count(*) from (select * from (select b.*, prof_name from (select a.*, lec_name,prof_no from (select le.*, un.uni_name from lectureeval le, university un where le.uni_no=un.uni_no) a, lecture le where a.lec_no=le.lec_no and a.uni_no=le.uni_no) b, professor where b.prof_no = professor.prof_no) where (lec_review like '%'||#{keyword}||'%') or (lec_name like '%'||#{keyword}||'%') or (prof_name='%'||#{keyword}||'%'))
+	</select>
+	<select id="searchtotalB" parameterType="String" resultType="int">
+		select count(*) from (select c.*, rownum from (select * from (select b.*,bp.book_photo1 from book b, bookphoto bp where b.book_no=bp.book_no) where (book_name like '%'||#{keyword}||'%' or book_writer like '%'||#{keyword}||'%' or book_pub  like '%'||#{keyword}||'%' or book_cont like '%'||#{keyword}||'%') and book_state=0) c)
+	</select>
+	<select id="searchtotalC" parameterType="String" resultType="int">
+		select count(*) from (select c.*, rownum from (select * from study where (study_type like '%'||#{keyword}||'%' or study_title like '%'||#{keyword}||'%' or study_cont  like '%'||#{keyword}||'%' or study_writer like '%'||#{keyword}||'%') and study_state=0) c)
+	</select>
+</mapper>

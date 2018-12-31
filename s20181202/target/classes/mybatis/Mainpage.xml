@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Mainpage">
+<resultMap type="University" id="MainUni1">
+	<result property="uni_no" column="uni_no"/>
+    <result property="uni_name" column="uni_name"/>
+</resultMap>
+<resultMap type="Lecture" id="MainLec1">
+    <result property="lec_no" column="lec_no"/>
+    <result property="uni_no" column="uni_no"/>
+    <result property="lec_name" column="lec_name"/>
+    <result property="pro_name" column="pro_name"/>
+</resultMap>
+<resultMap type="Professor" id="MainProf1">
+	<result property="prof_no" column="prof_no"/>
+    <result property="uni_no" column="uni_no"/>
+    <result property="prof_name" column="prof_name"/>
+</resultMap>
+<resultMap type="Course" id="MainCor1">
+	<result property="att_year" column="leceval_no"/>
+    <result property="att_term" column="lec_no"/>
+    <result property="lec_no" column="uni_no"/>
+    <result property="uni_no" column="lec_hw"/>
+</resultMap>
+<resultMap type="LectureEval" id="MainLecE">
+	<result property="leceval_no" column="leceval_no"/>
+    <result property="lec_no" column="lec_no"/>
+    <result property="uni_no" column="uni_no"/>
+    <result property="lec_hw" column="lec_hw"/>
+    <result property="lec_ratio" column="lec_ratio"/>
+    <result property="lec_attend" column="lec_attend"/>
+    <result property="lec_exam" column="lec_exam"/>
+    <result property="lec_review" column="lec_review"/>
+    <result property="lec_score" column="lec_score"/>
+    <result property="f" column="f"/>
+    <result property="uni_name" column="uni_name"/>
+    <result property="prof_name" column="prof_name"/>
+    <result property="att_term" column="att_term"/>
+    <result property="lec_name" column="lec_name"/>
+</resultMap>
+<resultMap type="Book" id="MainBook">
+    <result property="book_no" column="book_no"/>
+    <result property="book_name" column="book_name"/>
+    <result property="book_writer" column="book_writer"/>
+    <result property="book_pub" column="book_pub"/>
+    <result property="book_date" column="book_date"/>
+    <result property="book_price" column="book_price"/>
+    <result property="book_selling" column="book_selling"/>
+    <result property="book_cont1" column="book_cont1"/>
+    <result property="book_cont2" column="book_cont2"/>
+    <result property="book_met" column="book_met"/>
+    <result property="book_cont" column="book_cont"/>
+    <result property="book_state" column="book_state"/>
+    <result property="book_photo1" column="book_photo1"/>
+</resultMap>
+<resultMap type="Study" id="MainStudy">
+    <result property="study_no" column="study_no"/>
+    <result property="study_type" column="study_type"/>
+    <result property="study_title" column="study_title"/>
+    <result property="study_writer" column="study_writer"/>
+    <result property="study_cont" column="study_cont"/>
+    <result property="study_warn" column="study_warn"/>
+    <result property="study_state" column="study_state"/>
+</resultMap>
+	
+	<select id="MainBook" parameterType="Book" resultMap="MainBook">
+		select book_photo1, book_no, book_name, book_writer,book_pub from (select rownum rn, a.* from (select b.*,bp.book_photo1 from book b, bookphoto bp where b.book_no=bp.book_no order by dbms_random.random) a) where rn between 1 and 10
+	</select>
+	
+	<select id="MainStudy" parameterType="Study" resultMap="MainStudy">
+		select study_warn,study_title, study_cont,study_type,study_no from (select rownum rn, a.* from (select * from study where study_state=0 order by dbms_random.random) a) where rn between 1 and 6
+	</select>
+	<select id="MainpageLec" parameterType="LectureEval" resultMap="MainLecE">
+		select e.* from (select rownum rn, d.* from (select c.*,prof_name from professor,(select lec_name,prof_no, b.* from lecture, (select a.*, uni_name from university,(select lec_no,uni_no,att_term, avg(lec_score) f from lectureeval a where uni_no= #{uni_no} group by att_term,lec_no, uni_no) a where university.UNI_NO=a.uni_no) b where lecture.LEC_NO=b.lec_no) c where professor.PROF_NO=c.prof_no order by f desc) d) e where rn between 1 and 6
+	</select>
+</mapper>

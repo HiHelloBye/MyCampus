@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>
+		<typeAlias type="oracle.java.s20181202.model.LectureEval" alias="LectureEval" /> 
+    	<typeAlias type="oracle.java.s20181202.model.ExamInfo" alias="ExamInfo" />
+    	<typeAlias type="oracle.java.s20181202.model.Study" alias="Study"/>
+		<typeAlias type="oracle.java.s20181202.model.StudyComm" alias="StudyComm"/>
+		<typeAlias type="oracle.java.s20181202.controller.vo.WarningVO" alias="WarningVO"/> 
+		<typeAlias type="oracle.java.s20181202.model.Member" alias="Member"/>
+		<typeAlias type="oracle.java.s20181202.model.University" alias="University"/>
+		<typeAlias type="oracle.java.s20181202.model.Lecture" alias="Lecture"/>
+		<typeAlias type="oracle.java.s20181202.model.Professor" alias="Professor"/>
+		<typeAlias type="oracle.java.s20181202.model.Book" alias="Book"/>
+		<typeAlias type="oracle.java.s20181202.model.Course" alias="Course"/>
+		<typeAlias type="oracle.java.s20181202.model.Search" alias="Search"/>
+		<typeAlias type="oracle.java.s20181202.model.BookPhoto" alias="BookPhoto"/>
+		<typeAlias type="oracle.java.s20181202.model.Message" alias="Message"/>
+	</typeAliases>
+	<mappers>
+		<mapper resource="mybatis/LectureEval.xml" />
+		<mapper resource="mybatis/ExamInfo.xml" />
+		<mapper resource="mybatis/Study.xml"/>
+		<mapper resource="mybatis/StudyComm.xml"/>
+		<mapper resource="mybatis/WarningVO.xml"/>
+		<mapper resource="mybatis/Book.xml"/>
+		<mapper resource="mybatis/Professor.xml"/>
+		<mapper resource="mybatis/BookPhoto.xml"/>
+		<mapper resource="mybatis/Member.xml"/>
+		<mapper resource="mybatis/Mainpage.xml"/>
+		<mapper resource="mybatis/ResultPage.xml"/>
+		
+		<mapper resource="mybatis/University.xml"/>	
+		<mapper resource="mybatis/Lecture.xml"/>
+		<mapper resource="mybatis/Message.xml"/>
+	</mappers>
+</configuration>

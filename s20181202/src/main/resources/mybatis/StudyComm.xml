@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="StudyComm">
+  <!-- Use type aliases to avoid typing the full classname every time. -->
+  <resultMap id="StudyCommResult"  type="StudyComm">
+    <result property="study_no" column="study_no"/>
+    <result property="comm_no" column="comm_no"/>
+    <result property="comm_writer" column="comm_writer"/>
+    <result property="comm_cont" column="comm_cont"/>
+    <result property="comm_type" column="comm_type"/>
+    <result property="bgroup" column="bgroup"/>
+    <result property="bstep" column="bstep"/>
+    <result property="comm_state" column="comm_state"/>
+  </resultMap>
+
+	<select id="writeCmt" parameterType="StudyComm" resultMap="StudyCommResult">
+		insert into studycomm values(
+		#{study_no},StudyComm_seq.nextval,
+		#{comm_writer},#{comm_cont},
+		#{comm_type},StudyComm_seq.nextval,0,0)
+	</select>
+	<select id="commCount" resultType="int">
+		select count(*) from studycomm where study_no=#{study_no} and comm_type!=2
+	</select>
+	<update id="studyCommDelete" parameterType="int">
+		update studycomm set comm_type = 3 
+		where comm_no=#{comm_no} 
+	</update>
+	
+	<delete id="studyCompDelete" parameterType="int">
+		delete from studycomm where comm_no=#{comm_no}
+	</delete>
+	<select id="studyCommUpdateForm" parameterType="StudyComm" resultMap="StudyCommResult">
+		select * from studycomm 
+		where comm_no=#{comm_no} and study_no=#{study_no}
+	</select>
+	<update id="studyCommUpdate" parameterType="StudyComm" >
+		update studycomm set comm_cont = #{comm_cont},comm_type=#{comm_type}
+		where comm_no=#{comm_no} and study_no=#{study_no}
+	</update>
+	<select id="writeReCmt" parameterType="StudyComm" resultMap="StudyCommResult">
+		insert into studycomm values(
+		#{study_no},StudyComm_seq.nextval,
+		#{comm_writer},#{comm_cont},
+		#{comm_type},#{bgroup},#{bstep}+1,0)
+	</select>
+ </mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Message">
+	<resultMap type="Message" id="MessageResult">
+		
+		<result property="msg_no" column="msg_no"/>
+		<result property="msg_sender" column="msg_sender"/>
+		<result property="msg_reci" column="msg_reci"/>
+		<result property="msg_date" column="msg_date"/>
+		<result property="msg_cont" column="msg_cont"/>
+		
+	</resultMap>
+	<insert id="bookSendMsg" parameterType="message">
+		insert into message(msg_no, msg_sender, msg_reci, msg_date, msg_cont) values((select nvl(max(msg_no)+1,0) from message),#{msg_sender}, #{msg_reci}, sysdate ,#{msg_cont})
+	</insert>
+</mapper>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="LectureEval">
+  <!-- Use type aliases to avoid typing the full classname every time. -->
+  <resultMap id="LectureEvalResult"  type="LectureEval">
+    <result property="leceval_no" column="leceval_no"/>
+    <result property="leceval_name" column="leceval_name"/>
+    <result property="lec_no" column="lec_no"/>
+    <result property="uni_no" column="uni_no"/>
+    <result property="lec_hw" column="lec_hw"/>
+    <result property="lec_ratio" column="lec_ratio"/>
+    <result property="lec_attend" column="lec_attend"/>
+    <result property="lec_exam" column="lec_exam"/>
+    <result property="lec_review" column="lec_review"/>
+    <result property="lec_score" column="lec_score"/>
+    <result property="prof_name" column="prof_name"/>
+    <result property="att_term" column="att_term"/>
+    <result property="lec_warn" column="lec_warn"/>
+    <result property="lec_state" column="lec_state"/>
+    <result property="member_no" column="member_no"/>
+  </resultMap>
+  <select id="listEvalAll" parameterType="LectureEval" resultMap="LectureEvalResult">
+    select * 
+	from (select rownum rn, a.* 
+      	  from (select l.lec_name,p.PROF_NAME,e.*
+          from lectureEval e, lecture l, professor p
+          where e.lec_no = l.lec_no
+          and e.uni_no = p.uni_no
+          and l.prof_no= p.prof_no 
+          and l.uni_no=#{uni_no}
+          order by leceval_no) a) 
+     where rn between #{start} and #{end}
+     order by att_term desc
+  </select>
+   
+  <select id="total" resultType="int">
+  	select count(*) from lectureEval
+  </select>
+  
+  <select id="lecEvalDetail" parameterType="LectureEval" resultMap="LectureEvalResult">
+  	select  leceval_no, lec_name, e.lec_no, e.uni_no, lec_hw ,lec_ratio, lec_attend, lec_exam, lec_review, trunc(lec_score,1) as lec_score, prof_name, e.att_term, e.member_no
+	from lectureEval e, course c,lecture l,professor p
+	where e.uni_no = c.UNI_NO
+	and e.lec_no=c.LEC_NO
+	and e.lec_no=l.lec_no
+  	and p.PROF_NO=l.PROF_NO
+  	and c.ATT_TERM=e.att_term
+	and e.lec_no=#{lec_no}
+	and e.uni_no=#{uni_no}
+	order by att_term desc
+  </select>
+  <select id="lecTermList" parameterType="int" resultMap="LectureEvalResult">
+	select  distinct(le.att_term) from course c, lectureeval le
+	where le.uni_no=c.uni_no
+	and le.lec_no=c.lec_no
+	and le.lec_no=#{lec_no}
+	order by le.att_term
+  </select>
+  
+  <select id="lecEvalAvgHw" parameterType="LectureEval" resultType="LectureEval">
+  		select max(lec_hw) as lec_hw
+		from (select lec_hw,count(lec_hw)
+     	from lectureEval
+      	where lec_no=#{lec_no}
+      	and uni_no=#{uni_no}
+      	group by lec_hw)
+  </select>
+  <select id="lecEvalAvgRat" parameterType="LectureEval" resultType="LectureEval">
+  		select max(lec_ratio) as lec_ratio
+		from (select lec_ratio,count(lec_ratio)
+     	from lectureEval
+      	where lec_no=#{lec_no}
+      	and uni_no=#{uni_no}
+      	group by lec_ratio)
+  </select>
+  <select id="lecEvalAvgEx" parameterType="LectureEval" resultType="LectureEval">
+  		select max(lec_exam) as lec_exam
+		from (select lec_exam,count(lec_exam)
+     	from lectureEval
+      	where lec_no=#{lec_no}
+      	and uni_no=#{uni_no}
+      	group by lec_exam)
+  </select>
+  <select id="lecEvalAvgAtt" parameterType="LectureEval" resultType="LectureEval">
+  		select max(lec_attend) as lec_attend
+		from (select lec_attend,count(lec_attend)
+     	from lectureEval
+      	where lec_no=#{lec_no}
+      	and uni_no=#{uni_no}
+      	group by lec_attend)
+  </select>
+  <select id="lecEvalAvgSc" parameterType="LectureEval" resultType="LectureEval">
+  		select trunc(avg(lec_score),1) as lec_score
+		from lectureEval
+		where lec_no=#{lec_no}
+		and uni_no=#{uni_no}
+		group by lec_no
+  </select>
+  
+  <insert id="insertlLecEval" parameterType="LectureEval">
+	 insert into LectureEval values ((select nvl(max(leceval_no)+1,0) from LectureEval),#{lec_no},#{uni_no},#{lec_hw},
+	 #{lec_ratio},#{lec_attend},#{lec_exam},#{lec_review},#{lec_score},#{att_term},#{lec_warn} ,#{lec_state},#{member_no}) 
+  </insert>
+  <select id="searchtotal" parameterType="String" resultType="int">
+  	select count(*) from lectureEval le, lecture l,professor p
+	where le.lec_no=l.lec_no
+	and le.uni_no=l.uni_no
+	and p.UNI_NO=l.uni_no
+	and l.PROF_NO=p.PROF_NO
+	and le.uni_no=p.UNI_NO
+	and ((lec_name like '%'||#{search}||'%') or (prof_name like '%'||#{search}||'%'))
+  </select>
+  <select id="searchList" parameterType="LectureEval" resultMap="LectureEvalResult">
+      
+	select * from  
+	(select rownum rr,ab.*
+	from(select rownum rn, a.* 
+	     from (select l.lec_name,p.PROF_NAME,e.lec_no,e.uni_no,TRUNC(avg(e.lec_score),1) as lec_score
+	           from lectureEval e, lecture l, professor p
+	           where e.lec_no = l.lec_no
+	           and e.uni_no = p.uni_no
+	           and l.prof_no= p.prof_no
+	           and l.uni_no=#{uni_no}
+	           group by l.lec_name,p.PROF_NAME,e.lec_no,e.uni_no
+	          )a
+	     )ab
+	where ((lec_name like '%'||#{search}||'%') or (prof_name like '%'||#{search}||'%')))
+	where rr between #{start} and #{end}
+  </select>
+  
+</mapper>

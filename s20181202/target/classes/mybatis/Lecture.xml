@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Lecture">
+	<resultMap type="Lecture" id="LectureResult">
+		<result property="lec_no" column="lec_no"/>
+		<result property="uni_no" column="uni_no"/>
+		<result property="lec_name" column="lec_name"/>
+		<result property="prof_no" column="prof_no"/>
+		<result property="total_score" column="total_score"/>
+	
+	</resultMap>
+
+	<insert id="letureinsert" parameterType="Lecture">
+	 insert into Lecture values (#{lec_no}, #{uni_no},#{lec_name},
+	 #{prof_no},#{total_score})
+	
+	</insert> 
+	<select id="lecturelist" resultType="Lecture">
+		select *from (select rownum as rn, a.*
+		from (select l.lec_no, l.uni_no, l.lec_name, l.prof_no, p.prof_name
+				from lecture l , professor p
+				where l.prof_no = p.prof_no
+				order by uni_no ) a )
+			WHERE rn between #{start} and #{end} 
+	</select>
+<!-- 	<select id="ldetail" parameterType="int" resultType="Lecture">
+		select * from lecture where lec_no = #{lec_no}
+	</select>
+ -->
+	<select id="lecturetotal" resultType="int">
+		select count(*) from lecture
+	</select>
+	
+	<select id="lecturedetail" parameterType="int" resultType="Lecture">
+		select l.lec_no, l.uni_no, l.lec_name, l.prof_no, p.prof_name
+		from lecture l , professor p
+		where l.prof_no = p.prof_no and lec_no=#{lec_no}
+	</select>
+	<update id="lectureupdate1"  parameterType="Lecture">
+	 	update lecture set uni_no=#{uni_no}, lec_name=#{lec_name} 
+	 	where lec_no = #{lec_no} 
+	</update>
+ 	<update id="lectureupdate2"  parameterType="Lecture">
+	 	update professor set prof_name=#{prof_name} 
+	 	where uni_no=#{uni_no} 
+	</update> 
+</mapper>

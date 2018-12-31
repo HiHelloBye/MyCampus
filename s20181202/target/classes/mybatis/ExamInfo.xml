@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ExamInfo">
+  
+  <resultMap id="ExamInfoResult"  type="ExamInfo">
+  	 <result property="examinfo_no" column="examinfo_no"/>
+ 	 <result property="lec_no" column="lec_no"/>
+  	 <result property="uni_no" column="uni_no"/>
+  	 <result property="exam_type" column="exam_type"/>
+  	 <result property="que_type" column="que_type"/>
+  	 <result property="que_Ex" column="que_Ex"/>
+  	 <result property="exam_strat" column="exam_strat"/> 
+  	 <result property="att_term" column="att_term"/> 
+  	 <result property="member_no" column="member_no"/> 
+  </resultMap>
+  
+  <select id="ExamInfoDetail" parameterType="ExamInfo" resultMap="ExamInfoResult">
+    select  *
+	from examInfo e
+	where e.lec_no=#{lec_no}
+	and e.uni_no=#{uni_no}
+  </select>
+  
+  <insert id="insertExamInfo" parameterType="ExamInfo">
+	insert into ExamInfo values ((select nvl(max(examinfo_no)+1,0) from examInfo ),#{lec_no},#{uni_no},#{exam_type},#{que_type},#{que_Ex},#{exam_strat},#{att_term},#{member_no})
+  </insert>
+  </mapper>

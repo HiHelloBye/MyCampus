@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WarningVO">
+  <!-- Use type aliases to avoid typing the full classname every time. -->
+  <resultMap id="WarningResult"  type="WarningVO">
+    <result property="member_no" column="member_no"/>  
+    <result property="type_no" column="type_no"/>
+    <result property="study_leceval" column="study_leceval"/>
+    <result property="warn_state" column="warn_state"/>
+    <result property="a" column="a"/>
+    <result property="warn_count" column="warn_count"/>
+    <result property="study_warn" column="study_warn"/>  
+     <result property="lec_warn" column="lec_warn"/> 
+  </resultMap>
+    <resultMap id="Study2Result"  type="Study">
+  	<result property="study_no" column="study_no"/>
+    <result property="study_type" column="study_type"/>
+    <result property="study_title" column="study_title"/>
+    <result property="study_writer" column="study_writer"/>
+    <result property="study_cont" column="study_cont"/>
+    <result property="study_warn" column="study_warn"/>
+    <result property="study_state" column="study_state"/>
+    <result property="study_subtype" column="study_subtype"/>
+    <result property="warn_count" column="warn_count"/>
+  </resultMap>
+  <resultMap id="LectureEval2Result"  type="LectureEval">
+    <result property="leceval_no" column="leceval_no"/>
+    <result property="leceval_name" column="leceval_name"/>
+    <result property="lec_no" column="lec_no"/>
+    <result property="uni_no" column="uni_no"/>
+    <result property="lec_hw" column="lec_hw"/>
+    <result property="lec_ratio" column="lec_ratio"/>
+    <result property="lec_attend" column="lec_attend"/>
+    <result property="lec_exam" column="lec_exam"/>
+    <result property="lec_review" column="lec_review"/>
+    <result property="lec_score" column="lec_score"/>
+    <result property="prof_name" column="prof_name"/>
+    <result property="att_term" column="att_term"/>
+    <result property="lec_warn" column="lec_warn"/>
+    <result property="lec_state" column="lec_state"/>
+    <result property="warn_count" column="warn_count"/>
+    <result property="a" column="a"/>
+  </resultMap>
+  
+<select id="insertWarning" parameterType="WarningVO" statementType="CALLABLE">
+	   { call Warning_Insert3(#{member_no,mode=IN,jdbcType=INTEGER}
+	   , #{type_no,mode=IN,jdbcType=INTEGER}
+	   , #{study_leceval,mode=IN, jdbcType=INTEGER}
+	   , #{warn_state,mode=IN, jdbcType=INTEGER}
+	   , #{vmember_no,mode=OUT, jdbcType=INTEGER}
+	   , #{vtype_no,mode=OUT, jdbcType=INTEGER}
+	   , #{vstudy_leceval,mode=OUT, jdbcType=INTEGER}
+	   , #{vwarn_state,mode=OUT, jdbcType=INTEGER})
+         }
+</select>
+<!-- <select id="selectWarn" parameterType="java.util.Map" statementType="CALLABLE">
+	 { call Warning_Cursor3(
+                        #{sstudy,mode=IN,    jdbcType=INTEGER}
+                      , #{smember,mode=IN,    jdbcType=INTEGER}
+                      , #{warning,   mode=OUT,   jdbcType=CURSOR,
+                          javaType=java.sql.ResultSet , resultMap=WarningResult})
+         }
+	
+</select> -->
+	<select id="selectWarn" resultType="int">
+		select count(*) a 
+		from warning 
+		where type_no=#{type_no} 
+		and study_leceval=#{study_leceval}
+		and member_no=#{member_no}	
+	</select>
+	
+	<select id="selectWarnCnt" resultType="int">
+		select count(*) warn_count 
+		from warning 
+		where type_no=#{type_no} and study_leceval=#{study_leceval}	
+	</select>
+	<update id="updateWarnStudy" parameterType="WarningVO">
+		update study
+		set study_warn=#{warn_count}
+		where study_no=(select study_leceval
+		                from warning
+		                where member_no=#{member_no}
+		                and type_no=#{type_no}
+		                and study_leceval=#{study_leceval}
+		                )
+	</update> 
+	<update id="updateWarnLec" parameterType="WarningVO">
+		update LECTUREEVAL
+		set lec_warn=#{warn_count}
+		where leceval_no=(select study_leceval
+		                from warning
+		                where member_no=#{member_no}
+		                and type_no=#{type_no}
+		                and study_leceval=#{study_leceval}
+		                )
+		
+	</update>
+	
+	<delete id="warnDelLec" parameterType="WarningVO">
+	delete from warning where study_leceval= #{study_leceval} and type_no= #{type_no}
+	</delete>
+	<delete id="warnDelStu" parameterType="WarningVO">
+	delete from warning where study_leceval=#{study_leceval} and type_no=#{type_no}
+	</delete>
+	<update id="resetWarnStu" parameterType="Study">
+	update  study set study_warn=0 where study_no=#{study_no}
+	</update>
+	<update id="resetWarnLec" parameterType="LectureEval">
+	update  lectureeval set lec_warn=0 where leceval_no=#{leceval_no}
+	</update>
+	<select id="adminLecList" parameterType="LectureEval" resultMap="LectureEval2Result">
+	select * from (select rownum rn, a.* from(select *from lectureeval order by leceval_no desc)a)  where rn between #{start} and #{end}
+	</select>
+	<select id="adminStudyList" parameterType="Study" resultMap="Study2Result">
+	select * from (select rownum rn, a.* from(select *from study order by study_no desc)a) where rn between #{start} and #{end}
+	</select>
+	<select id="totalLec" resultType="int">
+	 select count(*) from lectureeval
+	</select> 
+	<select id="totalStu" resultType="int">
+	 select count(*) from study
+	</select> 
+ </mapper>

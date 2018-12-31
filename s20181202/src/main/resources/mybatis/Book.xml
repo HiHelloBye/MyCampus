@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Book">
+	<resultMap id="BookResult" type="Book">
+		<result property="book_no" column="book_no"/>
+		<result property="book_name" column="book_name"/>
+		<result property="book_writer" column="book_writer"/>
+		<result property="book_pub" column="book_pub"/>
+		<result property="book_date" column="book_date"/>
+		<result property="book_price" column="book_price"/>
+		<result property="book_selling" column="book_selling"/>
+		<result property="book_cont1" column="book_cont1"/>
+		<result property="book_cont2" column="book_cont2"/>
+		<result property="book_met" column="book_met"/>
+		<result property="book_cont" column="book_cont"/>
+		<result property="book_state" column="book_state"/>
+		<result property="book_photo1" column="book_photo1"/>
+		<result property="uni_name" column="uni_name"/>
+	</resultMap>
+
+	<select id="booksellListAll" parameterType="Book" resultMap="BookResult">
+		select * from (select rownum rn, a.*, u.uni_name, bp.book_photo1 from ( select * from book order by book_no desc) a, bookphoto bp, member m, university u where a.member_no = m.member_no and a.book_no = bp.book_no and m.uni_no = u.uni_no) aa where rn between #{start} and #{end}
+	</select>
+	
+	<select id="booktotal" resultType="int">
+  		select count(*) from book
+  	</select>
+  	
+  	<select id="detailBook" parameterType="int" resultType="Book">
+  		select * from book where book_no = #{book_no}
+  	</select>
+  	
+  	<select id="bookSearchListAll" parameterType="String" resultType="Book">
+  		select * from (select a.*, u.uni_name, bp.book_photo1 from ( select * from book where book.book_name like '%'||#{searchObj}||'%' order by book_no desc) a, bookphoto bp, member m, university u where a.member_no = m.member_no and a.book_no = bp.book_no and m.uni_no = u.uni_no  ) aa
+  	</select>
+  	
+	<insert id="insertBookSell" parameterType="Book">
+		insert into book (book_no, book_name, book_writer, book_pub, book_date, book_price, book_selling, book_cont1, book_cont2, book_met, book_cont, book_state, member_no)
+		values((select nvl(max(book_no)+1,0) from book), #{book_name}, #{book_writer}, #{book_pub}, #{book_date}, #{book_price}, #{book_selling}, #{book_cont1}, #{book_cont2}, #{book_met}, #{book_cont}, 0, #{member_no})
+	</insert>
+	
+	<select id="bookFindMemNic" parameterType="int" resultType="String">
+		select member_nick from member where member_no = #{member_no}
+	</select>
+	
+	<update id="updateSelling" parameterType="Book">
+		update book set book_selling = #{book_selling}  where book_no = #{book_no}
+	</update>
+	
+	<update id="updateCont" parameterType="Book">
+		update book set book_cont = #{book_cont}  where book_no = #{book_no}
+	</update>
+	
+	<update id="updateBookState" parameterType="Book">
+		update book set book_state = #{book_state}  where book_no = #{book_no}
+	</update>
+</mapper>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BookPhoto">
+
+	<resultMap type="BookPhoto" id="BookPhotoReslt">
+		<result property="book_no" column="book_no"/>
+		<result property="book_photo1" column="book_photo1"/>
+		<result property="book_photo2" column="book_photo2"/>
+		<result property="book_phto3" column="book_photo3"/>
+	</resultMap>
+	
+	<insert id="insertBookPhotoSell" parameterType="BookPhoto">
+		insert into bookphoto values((select nvl(max(book_no),0) from book), #{book_photo1}, #{book_photo2}, #{book_photo3})
+	</insert>
+	
+	<select id="selectBookPhoto" parameterType="int" resultType="BookPhoto">
+		select book_photo1, book_photo2, book_photo3 from bookphoto where book_no = #{book_no}
+	</select>
+</mapper>

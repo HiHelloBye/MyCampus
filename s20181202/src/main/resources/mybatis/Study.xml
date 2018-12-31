@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Study">
+  <!-- Use type aliases to avoid typing the full classname every time. -->
+  <resultMap id="StudyCommResult"  type="StudyComm">
+    <result property="study_no" column="study_no"/>
+    <result property="comm_no" column="comm_no"/>
+    <result property="comm_writer" column="comm_writer"/>
+    <result property="comm_cont" column="comm_cont"/>
+    <result property="comm_type" column="comm_type"/>
+    <result property="bgroup" column="bgroup"/>
+    <result property="bstep" column="bstep"/>
+    <result property="reply" column="reply"/>
+    <result property="comm_state" column="comm_state"/>   
+    <result property="member_photo" column="member_photo"/> 
+  </resultMap>
+  <resultMap id="StudyResult"  type="Study">
+  	<result property="member_no" column="member_no"/>
+  	<result property="study_no" column="study_no"/>
+    <result property="study_type" column="study_type"/>
+    <result property="study_title" column="study_title"/>
+    <result property="study_writer" column="study_writer"/>
+    <result property="study_cont" column="study_cont"/>
+    <result property="study_warn" column="study_warn"/>
+    <result property="study_state" column="study_state"/>
+    <result property="study_subtype" column="study_subtype"/>
+    <result property="warn_count" column="warn_count"/>
+    <result property="member_photo" column="member_photo"/>
+    <result property="keywordStudy" column="keywordStudy"/>
+    <result property="currentBoardPage" column="currentBoardPage"/>
+  </resultMap>
+	<!-- 게시글수 -->  
+  	<select id="studyTotal" resultType="int">
+	select count(*) from study where study_state=0
+	</select>
+	<!-- 취업 -->
+	<select id="jobTotal" resultType="int">
+	select count(*) from study where study_type='취업'  and study_state=0
+	</select>
+	<select id="intTotal" resultType="int">
+	select count(*) from study where study_subtype='면접'  and study_state=0
+	</select>
+	<select id="tesTotal" resultType="int">
+	select count(*) from study where study_subtype='인적성'  and study_state=0
+	</select>
+	<select id="etcTotal" resultType="int">
+	select count(*) from study where study_subtype='기타' and study_type='취업' and study_state=0
+	</select>
+	
+		
+	<!-- 어학 -->
+	<select id="langTotal" resultType="int">
+	select count(*) from study where study_type='어학'  and study_state=0
+	</select>	
+	<select id="engTotal" resultType="int">
+	select count(*) from study where study_subtype='영어'  and study_state=0
+	</select>
+	<select id="japTotal" resultType="int">
+	select count(*) from study where study_subtype='일본어' and study_state=0
+	</select>
+	<select id="chiTotal" resultType="int">
+	select count(*) from study where study_subtype='중국어'  and study_state=0
+	</select>
+	<select id="etc1Total" resultType="int">
+	select count(*) from study where study_subtype='기타' and study_type='어학'  and study_state=0
+	</select>
+	
+	
+	
+	<!-- 게시글 목록 -->
+	<select id="boardStudyList"  parameterType="Study" resultMap="StudyResult">
+		select * from
+		(select rownum rn, a.* from(select *from study where study_state=0 order by study_no desc)a) 
+		<!-- where rn between #{start} and #{end}  -->
+	</select> 
+	<!-- 취업 -->
+	<select id="boardJobStudyList"  parameterType="Study" resultMap="StudyResult">
+		<!-- select * from(select rownum rn, a.* from(select *from study  where study_type='취업' order by study_no desc)a) where rn between #{startJob} and #{endJob} -->
+		<!-- select rownum,s.*,a.* from 
+		(SELECT study_no,comm_state, COUNT(*) as reply from studycomm where comm_type!=3 GROUP BY study_no,comm_state)a 
+		full outer join study s on s.study_no=a.study_no 
+		where study_type='취업' and (study_state=0 or study_state is null)and rownum between #{startJob} and #{endJob} order by s.study_no desc -->
+		select aa.* from (select rownum,s.*,a.* from
+		(SELECT study_no as study_number,comm_state, COUNT(*) as reply from studycomm 
+		where comm_type!=3 GROUP BY study_no,comm_state)a full outer join study s on s.study_no=a.study_number 
+		where study_type='취업' or study_type= '공지' and (study_state=0 or study_state is null) order by s.study_type asc,s.study_no desc)aa where rownum between #{startJob} and #{endJob} 
+	</select> 
+	<select id="boardIntStudyList"  parameterType="Study" resultMap="StudyResult">
+		<!-- select * from(select rownum rn, a.* from(select *from study  where study_subtype='면접' order by study_no desc)a) where rn between #{startJob} and #{endJob} -->
+		<!-- select rownum,s.*,a.* from 
+		(SELECT study_no,comm_state, COUNT(*) as reply from studycomm where comm_type!=3 GROUP BY study_no,comm_state)a 
+		full outer join study s on s.study_no=a.study_no 
+		where study_subtype='면접' and (study_state=0 or study_state is null)  and rownum between #{startInt} and #{endInt} order by s.study_no desc -->
+		select aa.* from (select rownum,s.*,a.* from
+		(SELECT study_no as study_number,comm_state, COUNT(*) as reply from studycomm 
+		where comm_type!=3 GROUP BY study_no,comm_state)a full outer join study s on s.study_no=a.study_number 
+		where study_subtype='면접' or study_type= '공지' and (study_state=0 or study_state is null) order by s.study_type asc,s.study_no desc)aa where rownum between #{startInt} and #{endInt} 
+	</select> 
+	<select id="boardTesStudyList"  parameterType="Study" resultMap="StudyResult">
+		<!-- select * from(select rownum rn, a.* from(select *from study  where study_subtype='인적성' order by study_no desc)a) where rn between #{startJob} and #{endJob} -->
+		<!-- select rownum,s.*,a.* from 
+		(SELECT study_no,comm_state, COUNT(*) as reply from studycomm where comm_type!=3 GROUP BY study_no,comm_state)a 
+		full outer join study s on s.study_no=a.study_no 
+		where study_subtype='인적성' and (study_state=0 or study_state is null)  and rownum between #{startInt} and #{endInt} order by s.study_no desc -->
+		select aa.* from (select rownum,s.*,a.* from
+		(SELECT study_no as study_number,comm_state, COUNT(*) as reply from studycomm 
+		where comm_type!=3 GROUP BY study_no,comm_state)a full outer join study s on s.study_no=a.study_number 
+		where study_subtype='인적성' or study_type= '공지' and (study_state=0 or study_state is null) order by s.study_type asc,s.study_no desc)aa where rownum between #{startTes} and #{endTes} 
+	</select> 
+	<select id="boardEtcStudyList"  parameterType="Study" resultMap="StudyResult">
+		<!-- select * from(select rownum rn, a.* from(select *from study  where study_subtype='기타' and study_type='취업' order by study_no desc)a) where rn between #{startJob} and #{endJob} -->
+		<!-- select rownum,s.*,a.* from 
+		(SELECT study_no,comm_state, COUNT(*) as reply from studycomm where comm_type!=3 GROUP BY study_no,comm_state)a 
+		full outer join study s on s.study_no=a.study_no 
+		where study_subtype='기타' and study_type='취업' and (study_state=0 or study_state is null)  and rownum between #{startInt} and #{endInt} order by s.study_no desc -->
+		select aa.* from (select rownum,s.*,a.* from
+		(SELECT study_no as study_number,comm_state, COUNT(*) as reply from studycomm 
+		where comm_type!=3 GROUP BY study_no,comm_state)a full outer join study s on s.study_no=a.study_number 
+		where study_subtype='기타' and study_type='취업' or study_type= '공지' and (study_state=0 or study_state is null) order by s.study_type asc,s.study_no desc)aa where rownum between #{startEtc} and #{endEtc}
+	</select> 
+	
+	
+	<!-- 어학 -->
+	<select id="boardLangStudyList"  parameterType="Study" resultMap="StudyResult">
+	<!-- select * from(select rownum rn, a.* from(select *from study  where study_type='어학' order by study_no desc)a) where rn between #{startLang} and #{endLang} -->
+	<!-- select rownum,s.*,a.* from 
+		(SELECT study_no,comm_state, COUNT(*) as reply from studycomm where comm_type!=3 GROUP BY study_no,comm_state)a 
+		full outer join study s on s.study_no=a.study_no 
+		where study_type='어학' and (study_state=0 or study_state is null)  and rownum between #{startInt} and #{endInt} order by s.study_no desc -->
+		select aa.* from (select rownum,s.*,a.* from
+		(SELECT study_no as study_number,comm_state, COUNT(*) as reply from studycomm 
+		where comm_type!=3 GROUP BY study_no,comm_state)a full outer join study s on s.study_no=a.study_number 
+		where study_type='어학' or study_type= '공지' and (study_state=0 or study_state is null) order by s.study_type asc,s.study_no desc)aa where rownum between #{startLang} and #{endLang} 
+	</select> 
+	<select id="boardEngStudyList"  parameterType="Study" resultMap="StudyResult">
+	<!-- select * from(select rownum rn, a.* from(select *from study  where study_subtype='영어' order by study_no desc)a) where rn between #{startLang} and #{endLang} -->
+	<!-- select rownum,s.*,a.* from 
+		(SELECT study_no,comm_state, COUNT(*) as reply from studycomm where comm_type!=3 GROUP BY study_no,comm_state)a 
+		full outer join study s on s.study_no=a.study_no 
+		where study_subtype='영어' and (study_state=0 or study_state is null)  and rownum between #{startInt} and #{endInt} order by s.study_no desc -->
+		select aa.* from (select rownum,s.*,a.* from
+		(SELECT study_no as study_number,comm_state, COUNT(*) as reply from studycomm 
+		where comm_type!=3 GROUP BY study_no,comm_state)a full outer join study s on s.study_no=a.study_number 
+		where study_subtype='영어' or study_type= '공지' and (study_state=0 or study_state is null) order by s.study_type asc,s.study_no desc)aa where rownum between #{startEng} and #{endEng}
+	</select> 
+	<select id="boardJapStudyList"  parameterType="Study" resultMap="StudyResult">
+	<!-- select * from(select rownum rn, a.* from(select *from study  where study_subtype='일본어' order by study_no desc)a) where rn between #{startLang} and #{endLang} -->
+	<!-- select rownum,s.*,a.* from 
+		(SELECT study_no,comm_state, COUNT(*) as reply from studycomm where comm_type!=3 GROUP BY study_no,comm_state)a 
+		full outer join study s on s.study_no=a.study_no 
+		where study_subtype='일본어' and (study_state=0 or study_state is null)  and rownum between #{startInt} and #{endInt} order by s.study_no desc -->
+		select aa.* from (select rownum,s.*,a.* from
+		(SELECT study_no as study_number,comm_state, COUNT(*) as reply from studycomm 
+		where comm_type!=3 GROUP BY study_no,comm_state)a full outer join study s on s.study_no=a.study_number 
+		where study_subtype='일본어' or study_type= '공지' and (study_state=0 or study_state is null) order by s.study_type asc,s.study_no desc)aa where rownum between #{startJap} and #{endJap}
+	</select> 
+	<select id="boardChiStudyList"  parameterType="Study" resultMap="StudyResult">
+	<!-- select * from(select rownum rn, a.* from(select *from study  where study_subtype='중국어' order by study_no desc)a) where rn between #{startLang} and #{endLang} -->
+	<!-- select rownum,s.*,a.* from 
+		(SELECT study_no,comm_state, COUNT(*) as reply from studycomm where comm_type!=3 GROUP BY study_no,comm_state)a 
+		full outer join study s on s.study_no=a.study_no 
+		where study_subtype='중국어' and (study_state=0 or study_state is null)  and rownum between #{startInt} and #{endInt} order by s.study_no desc -->
+		select aa.* from (select rownum,s.*,a.* from
+		(SELECT study_no as study_number,comm_state, COUNT(*) as reply from studycomm 
+		where comm_type!=3 GROUP BY study_no,comm_state)a full outer join study s on s.study_no=a.study_number 
+		where study_subtype='중국어' or study_type= '공지' and (study_state=0 or study_state is null) order by s.study_type asc,s.study_no desc)aa where rownum between #{startChi} and #{endChi}
+	</select> 
+	<select id="boardEtc1StudyList"  parameterType="Study" resultMap="StudyResult">
+	<!-- select * from(select rownum rn, a.* from(select *from study  where study_subtype='기타' and study_type='어학' order by study_no desc)a) where rn between #{startLang} and #{endLang} -->
+	<!-- select rownum,s.*,a.* from 
+		(SELECT study_no,comm_state, COUNT(*) as reply from studycomm where comm_type!=3 GROUP BY study_no,comm_state)a 
+		full outer join study s on s.study_no=a.study_no 
+		where study_subtype='기타' and study_type='어학' and (study_state=0 or study_state is null)  and rownum between #{startInt} and #{endInt} order by s.study_no desc -->
+		select aa.* from (select rownum,s.*,a.* from
+		(SELECT study_no as study_number,comm_state, COUNT(*) as reply from studycomm 
+		where comm_type!=3 GROUP BY study_no,comm_state)a full outer join study s on s.study_no=a.study_number 
+		where study_subtype='기타' and study_type='어학' or study_type= '공지'  and (study_state=0 or study_state is null) order by s.study_type asc,s.study_no desc)aa where rownum between #{startEtc1} and #{endEtc1}
+	</select> 
+	
+	
+	
+	
+	<!-- 게시글 내용 -->
+	<select id="studyContent" parameterType="Study" resultMap="StudyResult">
+		select * from member m, study s where s.study_writer = m.member_nick  and study_no=#{study_no}
+	</select>
+	<select id="nextStudy" parameterType="int" resultType="int">
+	<![CDATA[SELECT min(study_no) FROM study WHERE study_no >#{study_no}]]>	
+	</select>
+	<select id="prevStudy" parameterType="int" resultType="int">
+	<![CDATA[SELECT max(study_no) FROM study WHERE study_no <#{study_no}]]>	
+	</select>
+	
+	<!-- 게시글 댓글목록 -->
+	<select id="studyComments" parameterType="StudyComm" resultMap="StudyCommResult">
+		<!-- <![CDATA[select * from studyComm where study_no=#{study_no} and  comm_type<>3 order by bgroup asc,bstep asc]]> -->
+		<![CDATA[select * from member m, studycomm s where s.comm_writer = m.member_nick and s.study_no=#{study_no}  order by s.bgroup asc,s.bstep asc,s.comm_no asc]]>
+	</select>
+	
+	
+	
+	
+	<!-- 게시글 작성 수정 삭제 -->
+	<insert	id="studyWrite" parameterType="Study">
+		insert into study values(STUDY_SEQ.nextval,#{study_type},#{study_title},#{study_writer},#{study_cont},0,0,#{member_no},#{study_subtype})
+	</insert>
+	 <select id="StudyUpdateForm" parameterType="Study" resultMap="StudyResult">
+		select * from study where study_no=#{study_no}
+	</select>
+	<update id="studyUpdate" parameterType="Study">
+		update study set study_no=#{study_no},
+		study_type=#{study_type},study_title=#{study_title},
+		study_writer=#{study_writer},study_cont=#{study_cont},		
+		study_warn=#{study_warn},study_state=#{study_state},study_subtype=#{study_subtype}
+		 where study_no=#{study_no}
+	</update>
+	<update id="updateState" parameterType="int">
+		update study set study_state=1 where study_no=#{study_no}
+	</update>
+	
+	<!-- 리플개수포함 리스트 -->
+	<select id="replyList" parameterType="Study" resultMap="StudyResult">
+		<![CDATA[select s.*,a.* from (SELECT study_no, COUNT(*) as reply from studycomm where comm_type <> 3 GROUP BY study_no)a full outer join study s on s.study_no=a.study_no where study_subtype='영어']]>
+	</select>
+	
+	<!-- <update id="updateWarnStudy" parameterType="Study">
+		update study set study_warn=#{warn_count} where study_no=#{study_no}
+	</update> -->
+	
+	<!--이태현  -->
+	<select id="noticetotal" resultType="int">
+  	select count(*) from study where study_type = '공지'
+ 	</select>
+ 	
+ 	
+<!-- 	<select id="nListCnt" parameterType="String" resultType="int">
+		SELECT count(*) FROM study WHERE study_type= #{study_no} order by study_no
+	</select> -->
+ 	
+
+	<select id="nlist" resultType="Study">
+			SELECT * 
+            FROM study 
+            WHERE study_type='공지' 
+            and study_warn !=10
+            and study_state !=1
+            order by study_no
+	</select>
+	
+	<insert id="noticeInsert" parameterType="Study" >
+		insert into study (study_no, study_type, study_title, study_writer, study_cont, study_warn, study_state, member_no  ) 
+		values  ((select nvl(max(study_no)+1,0) from study),  #{study_type}, #{study_title},
+		 '관리자', #{study_cont}, #{study_warn}, #{study_state}, 1) 
+	</insert>
+	
+	<select id="ndetail" parameterType="int" resultType="Study">
+		   	 select * from study  where study_no = #{study_no}
+		
+	
+	
+	</select>
+	<update id="studytype">
+		update study set study_type=#{study_type}, study_title=#{study_title},
+		study_writer=#{study_writer}, study_cont=#{study_cont} where study_no = #{study_no}
+		
+	</update>
+	
+	<update id="ndelete" parameterType="int">
+	update study set study_state = 1 where study_no = #{study_no}
+	</update>
+	
+	
+	<select id="edyStudyTotal" resultType="int">
+	select count(*) from study where study_state=0 and study_title like '%'||#{keywordStudy}||'%'
+	</select>
+	<select id="edySearchStudyList" resultType="Study">
+	<!-- select *from study where study_state=0 and study_title like '%'||#{keywordStudy}||'%' -->
+	select * from (select rownum rn, a.* from(select *from study where study_state=0 and study_title like '%'||#{keywordStudy}||'%' order by study_no desc)a) where rn between #{start} and #{end} 
+	</select>
+	<select id="edyStudyList"  parameterType="Study" resultMap="StudyResult">
+		select * from
+		(select rownum rn, a.* from(select *from study where study_state=0 order by study_no desc)a) 		
+	</select> 
+ </mapper>
