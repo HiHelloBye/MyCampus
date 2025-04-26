@@ -18,7 +18,11 @@ Inspired by Everytime.kr campus platforms, it provides essential services for st
 </div>
 
 ## 🛠️ Technologies Used
-- Spring Framework, ORACLE, HTML/CSS, JavaScript, jQuery
+- Spring MVC
+- ORACLE
+- HTML5/CSS
+- JavaScript
+- jQuery
 
 ## 📚 Features 
 ### 1. Course Reviews
@@ -47,3 +51,6 @@ Inspired by Everytime.kr campus platforms, it provides essential services for st
 - Developed backend functionalities for posting, updating, and managing book listings.
 - Enabled messaging between buyers and sellers to facilitate transactions.
 - Focused on improving user experience for trading books within the community.
+
+---
+This project demonstrates practical experience in full-stack web development and teamwork, with a focus on user-centered design.
