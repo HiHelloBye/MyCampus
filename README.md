@@ -1,5 +1,11 @@
 # MyCampus
 대학 생활을 더 편하고 즐겁게, 마이캠퍼스.
+Make college life more comfortable and enjoyable, My Campus.
+
+팀 프로젝트로 개발한 대학 커뮤니티 웹 서비스입니다.
+에브리타임으로부터 영감을 받아 만들었고, 학생들에게 필요한 기능을 제공합니다.
+A university community service web application developed as a team project.  
+Inspired by Everytime.kr campus platforms, it provides essential services for students.
 
 <h2>screenshots</h2>  
 <div>
@@ -11,28 +17,28 @@
 <img width="400" src="https://user-images.githubusercontent.com/28393778/50554475-58a5d400-0cfe-11e9-8542-9670da411f5c.PNG"></img>
 </div>
 
+## 🛠️ Technologies Used
+- Spring Framework, ORACLE, HTML/CSS, JavaScript, jQuery
 
-<h3>주요기능</h3>  
+## 📚 Features 
+### 1. Course Reviews
+- Share lecture evaluations to help fellow students.
+- Browse tips about exams and professors.
+- Found an inappropriate review? You can report it easily!
 
-마이페이지에서 개인 정보와 프로필 사진을 변경할 수 있습니다.  
-이메일로 편하게 가입하세요.
+### 2. Used Book Marketplace
+- Looking for textbooks for a new semester? Check out the marketplace—you might find great deals!
+- Have books you no longer need? Upload them to the marketplace.
+- Communicate with sellers and buyers via direct messaging.
+- Once a transaction is completed, mark the item as "Sold" to prevent further inquiries.
 
-<h4> 1. 강의평가 </h4>
+### 3. Study Group Board
+- Find or recruit members for language study or job preparation groups.
+- Post announcements for study groups you want to create.
+- Choose between public comments (visible to all) and private comments (visible only between you and the poster) for secure communication.
 
-  - 재학생들의 강의 정보 공유를 위한 강의평가 게시판입니다.
-  - 재학생들의 시험정보 팁도 확인하세요. 
-  - 이상한 강의평가가 있나요? 신고해주세요!
-
-<h4> 2. 책방</h4>
-
-  - 새로운 학기 책이 필요하신가요? 책방을 이용해주세요. 예상치 못한 새 책들을 만날 수 있습니다.
-  - 안 쓰는 책들이 있나요? 책방에 올려주세요.
-  - 쪽지를 보내 거래할 수 있습니다.
-  - 판매가 완료되면 '판매 완료'를 눌러 쪽지가 오는 것을 막아주세요.
-  
-<h4> 3. 스터디</h4>
-
-  - 마이캠퍼스는 어학 스터디와 취업 스터디 게시판을 제공합니다.
-  - 모여서 공부하시고 싶으신가요? 스터디 게시판에 공고를 올려주세요!
-  - 모두가 볼 수 있는 일반 댓글과 판매자와 본인만 볼 수 있는 비밀 댓글을 선택하여 작성자와 모임을 정하세요.
+## 👨‍💻 Team Project Overview
+- Developed as a collaborative team project during job preparation training.
+- Focused on designing real-world features for a campus community platform.
+- Experience in full-stack development and teamwork.
   
