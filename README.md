@@ -37,8 +37,13 @@ Inspired by Everytime.kr campus platforms, it provides essential services for st
 - Post announcements for study groups you want to create.
 - Choose between public comments (visible to all) and private comments (visible only between you and the poster) for secure communication.
 
-## 👨‍💻 Team Project Overview
+## Team Project Overview
 - Developed as a collaborative team project during job preparation training.
 - Focused on designing real-world features for a campus community platform.
 - Experience in full-stack development and teamwork.
   
+## My Contributions
+- Designed and implemented the Used Book Marketplace feature.
+- Developed backend functionalities for posting, updating, and managing book listings.
+- Enabled messaging between buyers and sellers to facilitate transactions.
+- Focused on improving user experience for trading books within the community.
